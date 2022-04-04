@@ -8,7 +8,8 @@ namespace PlanIt.Client.Data
         public async Task Initialize()
         {
             hubConnection = new HubConnectionBuilder()
-               .WithUrl("http://rahmad-planit.herokuapp.com/chathub")
+               .WithUrl("https://localhost:7248/chathub")
+               //.WithUrl("http://rahmad-planit.herokuapp.com/chathub")
                .Build();
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
@@ -25,12 +26,12 @@ namespace PlanIt.Client.Data
         }
         public bool IsConnected() =>
           hubConnection?.State == HubConnectionState.Connected;
-        public async Task Register(string id, string userInput) =>
-         await hubConnection.SendAsync("Register", id, userInput);
+        public async Task Register(string id, string userId, string userInput) =>
+         await hubConnection.SendAsync("Register", id, userId, userInput);
         public async Task Reveal(string id) =>
          await hubConnection.SendAsync("Reveal", id);
-        public async Task Select(string id, int userInput) =>
-         await hubConnection.SendAsync("SelectValue", id, userInput);
+        public async Task Select(string id, string userId, int userInput) =>
+         await hubConnection.SendAsync("SelectValue", id, userId, userInput);
 
         public async Task DisposeAsync() =>
          await hubConnection.DisposeAsync();
@@ -38,8 +39,8 @@ namespace PlanIt.Client.Data
     public interface ICommunicationService
     {
         Task Initialize();
-        Task Select(string id, int userInput);
-        Task Register(string id, string userInput);
+        Task Select(string id, string userId, int userInput);
+        Task Register(string id, string userId, string userInput);
         Task Reveal(string id);
         void OnReveal(Action<bool> action);
         void OnRegister(Action<List<User>> action);

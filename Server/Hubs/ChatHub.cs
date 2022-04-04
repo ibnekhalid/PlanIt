@@ -5,35 +5,36 @@ namespace PlanIt.Server.Hubs
     public class ChatHub : Hub
     {
 
-        public async Task SendMessage(string group, string user, string message)
+
+        public async Task SelectValue(string group, string userId, int value)
         {
-            await Clients.Group(group).SendAsync("ReceiveMessage", user, message);
-        }
-        public async Task SelectValue(string group, int value)
-        {
-            OnlineUsers.SetSelectedValue(Context.ConnectionId, group, value);
-            await Clients.Group(group).SendAsync("ReceiveSelectMessage", Context.ConnectionId, value);
+            OnlineUsers.SetSelectedValue(userId, group, value);
+            await Clients.Group(group).SendAsync("NewRegister", OnlineUsers.GetAll(group));
         }
         public async Task Reveal(string group)
         {
             await Clients.Group(group).SendAsync("Reveal", true);
         }
-        public async Task Register(string group, string username)
+        public async Task Register(string group, string userId, string username)
         {
-            if (!OnlineUsers.IsExists(group, Context.ConnectionId))
+            var findUser = OnlineUsers.FirstOrDefault(group, userId);
+            if (findUser != null)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, group);
-                var user = new User { GroupId = group, Id = Context.ConnectionId, Name = username };
-                OnlineUsers.AddUser(user);
-                await Clients.Group(group).SendAsync("NewRegister", OnlineUsers.GetAll(group));
+                OnlineUsers.RemoveUser(findUser);
             }
+            await Groups.AddToGroupAsync(Context.ConnectionId, group);
+            var user = new User { GroupId = group, Id = userId, Name = username };
+            OnlineUsers.AddUser(user);
+            await Clients.Group(group).SendAsync("NewRegister", OnlineUsers.GetAll(group));
+
         }
-        public async Task Disconnect(string group, string user)
+        public async Task Disconnect(string group, string userId)
         {
-            if (OnlineUsers.IsExists(group, Context.ConnectionId))
+            var findUser = OnlineUsers.FirstOrDefault(group, userId);
+            if (findUser != null)
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, group);
-                OnlineUsers.RemoveUser(new User { GroupId = group, Id = Context.ConnectionId, Name = user });
+                OnlineUsers.RemoveUser(findUser);
                 await Clients.Group(group).SendAsync("NewRegister", OnlineUsers.GetAll(group));
             }
         }
@@ -42,6 +43,7 @@ namespace PlanIt.Server.Hubs
     public class User
     {
         public string Id { get; set; }
+        public string ConnectionId { get; set; }
         public string GroupId { get; set; }
         public string Name { get; set; }
         public int SelectedValue { get; set; }
@@ -68,6 +70,10 @@ namespace PlanIt.Server.Hubs
         public static bool IsExists(string group, string id)
         {
             return userLookup.Any(x => x.GroupId.Equals(group) && id.Equals(x.Id));
+        }
+        public static User FirstOrDefault(string group, string userId)
+        {
+            return userLookup.FirstOrDefault(x => x.GroupId == group && x.Id == userId);
         }
         public static List<User> GetAll(string group)
         {

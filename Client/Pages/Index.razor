@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject ICommunicationService CommunicationService
 @inject ILocalStorageService localStorage
+@inject ICookie cookies
 @implements IAsyncDisposable
 
 <PageTitle>Index</PageTitle>
@@ -41,11 +42,14 @@
     public string? id { get; set; }
     private List<string> messages = new List<string>();
     private string? userInput;
+    private string? userId;
     private string? messageInput;
 
     protected override async Task OnInitializedAsync()
     {
-        
+        userId = string.Format("{0}",Guid.NewGuid());
+        await cookies.SetValue("userId", userId, 30);
+        userId = await cookies.GetValue("userId");
         if (string.IsNullOrEmpty(id))
         {
             id = Guid.NewGuid().ToString();
@@ -58,8 +62,8 @@
 
     private async Task Send()
     {
-        await localStorage.SetItem<string>("username",userInput);
-        await CommunicationService.Register(id, userInput);
+        await localStorage.SetItem<string>("username", userInput);
+        await CommunicationService.Register(id, userId, userInput);
         NavigationManager.NavigateTo($"/plan/{id}", true);
         StateHasChanged();
     }
@@ -68,15 +72,15 @@
     {
 
     }
-        string username = string.Empty;
+    string username = string.Empty;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-       
+
         if (firstRender)
         {
-             username = await localStorage.GetItem<string>("username");
-             if (!string.IsNullOrEmpty(username)) NavigationManager.NavigateTo($"/plan/{id}", true);
-         StateHasChanged();
+            username = await localStorage.GetItem<string>("username");
+            if (!string.IsNullOrEmpty(username) && CommunicationService.IsConnected()) NavigationManager.NavigateTo($"/plan/{id}", true);
+            StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
     }

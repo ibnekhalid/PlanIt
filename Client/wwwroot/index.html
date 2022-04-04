@@ -20,6 +20,15 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        <script>
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).catch((err) => {
+                    alert(err.message);
+                });
+        }
+    </script>
+    </script>
 </body>
 
 </html>

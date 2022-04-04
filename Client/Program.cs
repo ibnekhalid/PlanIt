@@ -6,7 +6,8 @@ using PlanIt.Client.Data;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-builder.Services.AddTransient<ILocalStorageService, LocalStorageService>();
+builder.Services.AddSingleton<ICookie, Cookie>();
+builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
