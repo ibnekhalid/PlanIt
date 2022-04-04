@@ -9,7 +9,7 @@ namespace PlanIt.Client.Data
         {
             hubConnection = new HubConnectionBuilder()
                //.WithUrl("https://localhost:7248/chathub")
-               .WithUrl("http://rahmad-planit.herokuapp.com/chathub")
+               .WithUrl("https://planiton.azurewebsites.net/chathub")
                .Build();
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {

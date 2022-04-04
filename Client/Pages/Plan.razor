@@ -130,7 +130,7 @@
                 }
                 <div class="parent-div">
                     <div class="card ">
-                        <div class="selected-value"> @users.Select(x=>x.SelectedValue).ToList().Average()</div>
+                        <div class="selected-value"> @users.Select(x=>x.SelectedValue).ToList().Average().ToString("###.#")</div>
                     </div>
                     <b>Avg</b>
                 </div>

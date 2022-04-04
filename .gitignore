@@ -6,3 +6,10 @@
 /Client/obj
 /Server/bin/Debug/net6.0
 /Server/obj
+/Server/bin/Release/net6.0
+/Server/Properties/PublishProfiles
+/Server/Properties/ServiceDependencies/planiton - Web Deploy/profile.arm.json
+/Server/PlanIt.Server.csproj.user
+/.vs/PlanIt/v16/.suo
+/Client/bin/Release/net6.0
+/.vs/PlanIt/config/applicationhost.config
