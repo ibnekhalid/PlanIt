@@ -103,7 +103,7 @@
 
                     <div class="parent-div">
                         <div class="card ">
-                            <div class="selected-value"> @(u.SelectedValue==0 || !Revealed?"":u.SelectedValue.ToString())</div>
+                            <div class="@(u.SelectedValue>0 || !Revealed?"selected-value":"")"> @(u.SelectedValue==0 || !Revealed?"":u.SelectedValue.ToString())</div>
                         </div>
                         <b>@u.Name</b>
                     </div>
@@ -117,7 +117,7 @@
         <div style="display: flex;position: absolute;bottom: 0;">
             @if (Revealed)
             {
-                foreach (var item in OnlineUsers.Result(id))
+                foreach (var item in Result())
                 {
 
                     <div class="parent-div">
@@ -129,7 +129,7 @@
                 }
                 <div class="parent-div">
                     <div class="card ">
-                        <div class="selected-value"> @OnlineUsers.Average(id)</div>
+                        <div class="selected-value"> @users.Select(x=>x.SelectedValue).ToList().Average()</div>
                     </div>
                     <b>Avg</b>
                 </div>
@@ -196,6 +196,20 @@
 
        });
     }
+     public  Dictionary<int, int> Result()
+        {
+            var occ = new Dictionary<int, int>();
+            var numbers = users.Select(x => x.SelectedValue).ToList();
+            var distinctNumbers = numbers.Distinct().ToList();
+            distinctNumbers.ForEach(x =>
+            {
+                occ.Add(x, numbers.Count(n => n == x));
+            });
+
+
+            return occ;
+
+        }
     private void ResetView()
     {
         StateHasChanged();
