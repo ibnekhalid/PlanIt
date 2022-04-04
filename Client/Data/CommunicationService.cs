@@ -8,8 +8,8 @@ namespace PlanIt.Client.Data
         public async Task Initialize()
         {
             hubConnection = new HubConnectionBuilder()
-               .WithUrl("https://localhost:7248/chathub")
-               //.WithUrl("http://rahmad-planit.herokuapp.com/chathub")
+               //.WithUrl("https://localhost:7248/chathub")
+               .WithUrl("http://rahmad-planit.herokuapp.com/chathub")
                .Build();
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
