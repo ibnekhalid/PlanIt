@@ -8,7 +8,7 @@ namespace BlazorServerSignalRApp.Data
         public async Task Initialize()
         {
             hubConnection = new HubConnectionBuilder()
-               .WithUrl("https://localhost:7021/chathub")
+               .WithUrl("http://rahmad-planit.herokuapp.com/chathub")
                .Build();
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
